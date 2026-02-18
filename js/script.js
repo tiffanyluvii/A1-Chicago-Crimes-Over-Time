@@ -109,17 +109,52 @@ const sliderSvg = d3.select("#slider")
   .attr("height", 100);
 
 const yearSlider = d3.sliderBottom()
-  .min(2001)
-  .max(2026)
+  .min(d3.min(crimeData, d => d.year))
+  .max(d3.max(crimeData, d => d.year))
   .step(1)
   .width(300)
   .tickFormat(d3.format("d"))
   .ticks(7)
   .default(2001)
   .on("onchange", (val) => {
-    console.log("year:", val);
+    renderPoints(val);
   });
 
 sliderSvg.append("g")
-  .attr("transform", "translate(" + (width - 580) / 2 + ",30) scale(1.2)") // center the slider and scale it up
+  .attr("transform", "translate(" + (width - 600) / 2 + ",30) scale(2)") // center the slider and scale it up
   .call(yearSlider);
+
+
+function renderPoints(year) {
+  const filtered = crimeData.filter(d => d.year === year);
+
+  const time = g.transition().duration(450);
+
+  g.selectAll("circle")
+    .data(filtered, d => `${d.year}-${d.lat}-${d.lon}-${d.crime}`)
+    .join(
+      enter => enter.append("circle")
+      .attr("cx", d => projection([d.lon, d.lat])[0])
+      .attr("cy", d => projection([d.lon, d.lat])[1])
+      .attr("fill", d => colorScale(d.crime))
+      .attr("r", 0)
+      .attr("opacity", 0)
+      .call(enter => enter.transition(time)
+        .attr("r", 3)
+        .attr("opacity", 1)
+        ),
+      update => update
+      .call(update => update.transition(time)
+        .attr("cx", d => projection([d.lon, d.lat])[0])
+        .attr("cy", d => projection([d.lon, d.lat])[1])
+        .attr("fill", d => colorScale(d.crime))
+        .attr("r", 3)
+        .attr("opacity", 1)
+        ),
+      exit => exit
+        .transition(time)
+        .attr("r", 0)
+        .attr("opacity", 0)
+        .remove()
+        );
+}
