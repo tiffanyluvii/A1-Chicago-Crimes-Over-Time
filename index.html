@@ -1,6 +1,24 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment 1</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Assignment 1</title>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Chicago Crime Data Visualization: 2001 - 2026</h1>
+            <div id="slider"></div> <!-- container for the scroll bar? -->
+            <div id="vis"></div>
+        </div>
+
+        <!-- Load D3.js and slider library before the module script -->
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/d3-svg-legend@2.25.6/d3-legend.min.js"></script>
+        <script src="https://unpkg.com/d3-simple-slider@2.0.0/dist/d3-simple-slider.min.js"></script>
+        <script type="module" src="js/script.js"></script>
+
+    </body>
+</html>

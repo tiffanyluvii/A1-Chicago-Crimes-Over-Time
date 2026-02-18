@@ -1,0 +1,8 @@
+# Ignore all CSV files in data folder
+data/Chicago_Crimes_2001_to_Present.csv
+
+# Ignore virtual environment
+.venv/
+
+# Ignore Python cache
+__pycache__/
