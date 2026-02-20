@@ -1,22 +1,3 @@
-// 'CRIMINAL SEXUAL ASSAULT',                           'BATTERY',
-//                              'THEFT',               'MOTOR VEHICLE THEFT',
-//                      'OTHER OFFENSE',                   'CRIMINAL DAMAGE',
-//                          'NARCOTICS',              'LIQUOR LAW VIOLATION',
-//         'OFFENSE INVOLVING CHILDREN',                           'ROBBERY',
-//                 'DECEPTIVE PRACTICE',                           'ASSAULT',
-//                  'CRIMINAL TRESPASS',                          'BURGLARY',
-//                  'WEAPONS VIOLATION',  'INTERFERENCE WITH PUBLIC OFFICER',
-//  'CONCEALED CARRY LICENSE VIOLATION',                        'KIDNAPPING',
-//                           'STALKING',            'PUBLIC PEACE VIOLATION',
-//                       'INTIMIDATION',                      'PROSTITUTION',
-//                           'HOMICIDE',                       'SEX OFFENSE',
-//                          'OBSCENITY',                             'ARSON',
-//                  'HUMAN TRAFFICKING',                  'PUBLIC INDECENCY',
-//                           'GAMBLING',          'OTHER NARCOTIC VIOLATION',
-//                       'NON-CRIMINAL',                         'RITUALISM',
-//                'CRIM SEXUAL ASSAULT',                 'DOMESTIC VIOLENCE'
-
-
 const width = 1500;
 const height = 800;
 const crimeTypes = ['CRIMINAL SEXUAL ASSAULT','BATTERY','THEFT','MOTOR VEHICLE THEFT','OTHER OFFENSE','CRIMINAL DAMAGE','NARCOTICS','LIQUOR LAW VIOLATION',
@@ -70,6 +51,7 @@ const chicago = await d3.json("./data/chicago-community-areas.geojson");
 
 const margin = { top: 80, right: 30, bottom: 30, left: 20 };
 const mapH = height - margin.top - margin.bottom;
+const xOffset = 200; // adjust this value to move the map right
 
 const projection = d3.geoMercator()
         .fitSize([width, mapH], chicago);
@@ -79,15 +61,23 @@ const path = d3.geoPath().projection(projection);
 g.selectAll("path")
     .data(chicago.features ? chicago.features : [chicago]) // works for FeatureCollection or single Feature
     .join("path")
+    .attr("class", "chicagoMap")
     .attr("d", path)
     .attr("fill", "#f2f2f2")
     .attr("stroke", "#333")
     .attr("stroke-width", 0.7)
-    .attr("transform", "translate(200, 0)");
+    .attr("transform", `translate(${xOffset}, 0)`);
 
+
+// creates the zoom behavior for the map 
+const zoom = d3.zoom()
+  .scaleExtent([1, 8])
+  .on("zoom", (event) => {
+    g.attr("transform", event.transform);
+});
+svg.call(zoom);
 
 // process the .csv file and visualize the crime data
-// !!! aparently the json file is in the [long, lat] order rather than the lat long
 
 const crimeData = await d3.csv("./data/sample_by_year.csv", (d) => {
     const lat = +d.Latitude;
@@ -102,10 +92,28 @@ const crimeData = await d3.csv("./data/sample_by_year.csv", (d) => {
     return { lat, lon, year, crime };
 });
 
+
+// create a dropdown menu for selecting the crime type to filter the points on the map
+const dropDown = d3.select("#dropdown")
+  .append("select")
+  .on("change", onDropDownChange);
+
+const dropDownOptions = dropDown.selectAll("option")
+  .data(["ALL CRIMES", ...crimeTypes])
+  .enter()
+  .append("option")
+  .text(function(d) { return d; })
+  .attr("value", function(d) { return d; });
+
+  function onDropDownChange() {
+    const selectedCrime = dropDown.property("value");
+    console.log("Selected crime type:", selectedCrime);
+  }
+
 // set up the slider for selecting the year range (2001-2026)
 const sliderSvg = d3.select("#slider")
   .append("svg")
-  .attr("width", width)
+  .attr("width", 500)
   .attr("height", 100);
 
 const yearSlider = d3.sliderBottom()
@@ -121,12 +129,13 @@ const yearSlider = d3.sliderBottom()
   });
 
 sliderSvg.append("g")
-  .attr("transform", "translate(" + (width - 600) / 2 + ",30) scale(2)") // center the slider and scale it up
+  .attr("transform", "scale(1.4)")
   .call(yearSlider);
 
 
 function renderPoints(year) {
-  const filtered = crimeData.filter(d => d.year === year);
+  const filtered = crimeData.filter(d => d.year === year && (dropDown.property("value") === "ALL CRIMES" 
+  || d.crime === dropDown.property("value")));
 
   const time = g.transition().duration(450);
 
@@ -134,7 +143,7 @@ function renderPoints(year) {
     .data(filtered, d => `${d.year}-${d.lat}-${d.lon}-${d.crime}`)
     .join(
       enter => enter.append("circle")
-      .attr("cx", d => projection([d.lon, d.lat])[0])
+      .attr("cx", d => projection([d.lon, d.lat])[0] + xOffset)
       .attr("cy", d => projection([d.lon, d.lat])[1])
       .attr("fill", d => colorScale(d.crime))
       .attr("r", 0)
