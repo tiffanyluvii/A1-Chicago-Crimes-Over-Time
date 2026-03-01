@@ -11,15 +11,83 @@
         <div class="container">
             <div id = "header">
                 <h1>Chicago Crime Over Time: 2001 - 2026</h1>
-                <p>
-                    Crime is often more common in large cities because more people live close together. This interactive visualization lets you explore how crime patterns change 
-                    across Chicago’s communities over time.
                 <br>
-                    You can see which crime types are most common and whether certain crimes increase or decrease from year to year.
+                <h2><u><b>Overview</b></u></h2>
+                <p>
+                   Chicago was recently ranked near the bottom in a national safety comparison (161st out of 182 U.S. cities), so we wanted to look past the headline ranking 
+                   and dig into what might be driving safety concerns. Using the City of Chicago dataset “Crimes – 2001 to Present”, our goal was to build a visualization that 
+                   shows where crime is more concentrated across the city and which crime categories are most common over time. This breakdown can help locals and tourists make 
+                   more informed choices about where they go and when, and it can also help policymakers identify which areas and crime types may need more targeted resources.
+                </p>
+                <br>
+                <p>
+                    Because the full dataset contains over 8.5 million records, we used a smaller sample that’s realistic for the assignment. We randomly selected 2,000 incidents 
+                    per year, creating a final dataset of about 52,000 records. We also simplified the data to only four fields that directly support our visualization goals: 
+                    Crime, Year, Latitude, and Longitude, so the results are easier to interpret without unnecessary details. To improve reliability, we removed any rows missing valid 
+                    values in those fields (invalid or missing coordinates, missing years, or blank crime types), leaving a cleaner subset that’s large enough to show patterns but small 
+                    enough to run smoothly in an interactive visualization.
+                </p>
+                <br>
+
+                <h2><u><b>Rationale</b></u></h2>
+                <p>
+                    We built our visualization around a Chicago map because we wanted to show not just which community areas have more crime, but where crime clusters within those areas. 
+                    We considered an alternative design that used bar charts split by both crime type and community area, but that approach would have pushed everything into one dense 
+                    view and encouraged overgeneralizing entire communities as “unsafe.” The map made it easier to see patterns of higher activity without flattening the story into one 
+                    number per community.
+                </p>
+                <br>
+                <p>
+                    For visual encodings, we mapped each incident using its latitude and longitude so the main information is communicated through position, which is one of the strongest 
+                    ways to represent quantitative, spatial data. We then encoded crime type by color and added a legend so users could quickly connect colors to categories. This was chosen
+                     because it lets patterns show up naturally through visible clusters, instead of forcing users to compare many stacked or segmented bars across dozens of categories. We 
+                     also decided to use a simple visual encoding of a circle to represent the data points, as it will allow for the complexity of the colors to be showcased.
+                </p>
+                <br>
+                <p>
+                    Our implemented interactions were designed to reduce clutter and make the visualization easier to explore. First, we included legend-based filtering, where users can check 
+                    off specific crimes to focus on a smaller subset. Since there are about 32 crime categories, filtering helps avoid confusion when many colors overlap. Second, we added a brush 
+                    (select) tool so users can highlight a region on the map and immediately see a linked bar chart summarizing crimes for just that selected area. This gives users a way to zoom 
+                    into detail without losing the overall citywide context. Third, we added a slider that allows users to choose a range between 2001 and 2026. Each option shows the crime rates
+                     within Chicago for that year. A slider easily allows users to see how crime trends have fluctuated throughout the years.
+                </p>
+                <br>
+                <p>
+                    Overall, we chose these interactions because they support the overall goal while also giving the ability to deep-dive into certain trends. The bar chart-only alternative 
+                    was rejected because it would have required heavy labeling and splitting across many communities and crime types, making it visually overwhelming. By combining a map with 
+                    filtering and brushing, we kept the main view intuitive while still giving users a clear way to isolate and analyze specific crimes and locations when the full map becomes busy.
+                </p>
+
+
+                <br>
+                <h2><u><b>Overview</b></u></h2>
+                <p>This assignment was split evenly between Tiffany Lu and Ryan Eldho. Ryan focused on the legend, including the interaction that lets users check/uncheck specific crime types 
+                    so only those crimes appear on the map. He also implemented the zoom feature, which helps users get more detailed location insight within specific parts of Chicago. He also worked 
+                    on the Python script that helped clean the original CSV file, so it would work better with our data visualization. Overall, this took him about 6 hours, mainly because he spent a lot 
+                    of time researching existing tools and approaches to support smooth zooming and filtering interactions.
+                </p>
+                <br>
+                <p>
+                    Tiffany worked on mapping the Chicago geoJSON, implementing the year slider filtering, and building the brush-and-link interaction that allows users to select a region on the map and generate 
+                    a linked bar chart showing the crime counts in that selected area. These tasks took about 12 hours total. The most difficult part was figuring out how the brushing function worked and connecting 
+                    it to the map in a way that updated the bar chart correctly every time the selection changed. She also ran into a bug where clearing the selection caused the bar chart to default to the full dataset 
+                    count, so she and Ryan decided to instead default the bar chart to the counts for the selected year when no region is actively selected.
+                </p>
+
+                <br>
+                <h2><u><b>References</b></u></h2>
+                <ul>
+                    <li><a href ="https://www.kaggle.com/datasets/doyouevendata/chicago-community-areas-geojson">Chicago GeoJSON</a></li>
+                    <li><a href ="https://data.cityofchicago.org/stories/s/Crimes-2001-to-present-Dashboard/5cd6-ry5g">Crimes 2001-Present Database</a></li>
+                    <li><a href ="https://www.illinoispolicy.org/chicago-ranks-among-americas-least-safe-cities/">Rankings of the Least Safe Cities in America</a></li>
+                </ul>
+
                 <br><br>
+                
+                <p>
                 <b><span style="color: #D62728;">Warning:</span></b>
                     This visualization uses a random sample of 2,000 records per year because the full dataset contains over 8.5 million records. For official city-wide totals and complete statistics, visit
-                    <a href="url">https://data.cityofchicago.org/stories/s/Crimes-2001-to-present-Dashboard/5cd6-ry5g</a>.
+                    <a href="https://data.cityofchicago.org/stories/s/Crimes-2001-to-present-Dashboard/5cd6-ry5g">https://data.cityofchicago.org/stories/s/Crimes-2001-to-present-Dashboard/5cd6-ry5g</a>.
                 </p>
             </div>
             <div id="controls">
