@@ -19,6 +19,9 @@ const svg = d3.select('#vis')
 
 const g = svg.append("g");
 
+const viewport = g.append("g"); // map and points layer
+const brushLayer = g.append("g"); // separate brush layer
+let mode = "brush"; // default is brush, but could also be pan
 
 // creates the legend for the crime types using the color scale and d3-legend library
 const colorScale = d3.scaleOrdinal()
@@ -59,7 +62,7 @@ const projection = d3.geoMercator()
 
 const path = d3.geoPath().projection(projection);
 
-g.selectAll("path")
+viewport.selectAll("path")
     .data([chicago])
     .join("path")
     .attr("class", "chicagoMap")
@@ -71,12 +74,12 @@ g.selectAll("path")
 
 
 // creates the zoom behavior for the map 
-// const zoom = d3.zoom()
-//   .scaleExtent([1, 8])
-//   .on("zoom", (event) => {
-//     g.attr("transform", event.transform);
-// });
-// svg.call(zoom);
+const zoom = d3.zoom()
+  .scaleExtent([1, 8])
+  .on("zoom", (event) => {
+    if (mode != "pan") return;
+    viewport.attr("transform", event.transform);
+});
 
 // process the .csv file and visualize the crime data
 
@@ -143,7 +146,7 @@ function renderPoints(year) {
 
   const time = g.transition().duration(450);
 
-  points = g.selectAll("circle")
+  points = viewport.selectAll("circle")
     .data(filtered, d => `${d.year}-${d.lat}-${d.lon}-${d.crime}`)
     .join(
       enter => enter.append("circle")
@@ -189,8 +192,9 @@ function renderPoints(year) {
 // establish a connection within the dataset
 
 const brush = d3.brush().extent([[xOffset, 0], [xOffset + width, mapH]]).on("brush end", brushed);
-g.append("g").attr("class", "brush").call(brush);
-
+const brushG = brushLayer.append("g")
+  .attr("class", "brush")
+  .call(brush);
 
 function brushed(event, year){
   if (!points) return;
@@ -207,8 +211,9 @@ function brushed(event, year){
   const selected = [];
 
   points.each(function (d){
-    const cx = projection([d.lon, d.lat])[0] + xOffset;
-    const cy = projection([d.lon, d.lat])[1];
+    const cx = +d3.select(this).attr("cx");
+    const cy = +d3.select(this).attr("cy");
+
 
     const box = x <= cx && cx <= x2 && y <= cy && cy <= y2;
 
@@ -306,6 +311,34 @@ function renderBars(crimeCount){
 
 }
 
-updateViews(crimeData.filter(d => d.Year === 2001))
+updateViews(crimeData.filter(d => d.year === 2001))
 
-// create a bar chart that counts all the crimes and clearly shows the top ten most common crimes in Chicago
+
+// functionality to toggle between brush and pan mode.
+function setMode(newMode) {
+  mode = newMode;
+
+  if (mode === "pan") {
+    brushG.call(brush.move, null);
+    brushG.style("pointer-events", "none"); // disable brush interactions
+    brushG.selectAll(".overlay,.selection,.handle").style("display", "none"); // hide brush elements
+    svg.call(zoom);
+  } else {
+    svg.on(".zoom", null); // disable zoom and pan
+
+    // move map back to original spot
+    svg.transition().duration(200).call(zoom.transform, d3.zoomIdentity); 
+    viewport.attr("transform", d3.zoomIdentity);
+
+    // enable brushing again
+    brushG.style("pointer-events", "all");
+    brushG.selectAll(".overlay,.selection,.handle").style("display", null);
+  }
+  d3.select("#brushModeBtn").classed("active", mode === "brush");
+  d3.select("#panModeBtn").classed("active", mode === "pan");
+}
+
+d3.select("#brushModeBtn").on("click", () => setMode("brush"));
+d3.select("#panModeBtn").on("click", () => setMode("pan"));
+
+setMode("brush");

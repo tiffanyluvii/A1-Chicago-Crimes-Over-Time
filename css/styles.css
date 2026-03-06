@@ -49,6 +49,37 @@ ul {
     gap: 16px;
 }
 
+.control-row {
+    display: flex;
+    align-items: center;
+}
+
+.control-row.buttons {
+    gap: 10px;
+}
+
+/* Base button */
+.mode-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #999;
+  background: #f3f3f3;
+  color: #111;
+  cursor: pointer;
+}
+
+/* Active button (selected mode) */
+.mode-btn.active {
+  background: #2b6cb0;
+  border-color: #2b6cb0;
+  color: white;
+}
+
+/* Optional hover */
+.mode-btn:hover {
+  background: #917a7a;
+}
+
 #header {
     text-align: center;
     margin-bottom: 5rem;
