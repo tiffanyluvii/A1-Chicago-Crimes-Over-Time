@@ -1,6 +1,8 @@
 let points = null;
 const width = 1500;
 const height = 800;
+const legendWidth = 620;
+const mapWidth = width - legendWidth;
 const crimeTypes = ['CRIMINAL SEXUAL ASSAULT','BATTERY','THEFT','MOTOR VEHICLE THEFT','OTHER OFFENSE','CRIMINAL DAMAGE','NARCOTICS','LIQUOR LAW VIOLATION',
 'OFFENSE INVOLVING CHILDREN','ROBBERY','DECEPTIVE PRACTICE','ASSAULT','CRIMINAL TRESPASS','BURGLARY','WEAPONS VIOLATION','INTERFERENCE WITH PUBLIC OFFICER',
 'CONCEALED CARRY LICENSE VIOLATION','KIDNAPPING','STALKING','PUBLIC PEACE VIOLATION', 'INTIMIDATION','PROSTITUTION','HOMICIDE','SEX OFFENSE','OBSCENITY','ARSON',
@@ -14,7 +16,7 @@ const colors =["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E37
 
 const svg = d3.select('#vis')
     .append('svg')
-    .attr('width', width)
+    .attr('width', mapWidth)
     .attr('height', height);
 
 const g = svg.append("g");
@@ -28,6 +30,10 @@ const colorScale = d3.scaleOrdinal()
     .domain(crimeTypes)
     .range(colors);
     
+const legendSvg = d3.select("#legend")
+    .append("svg")
+    .attr("width", legendWidth)
+    .attr("height", height);
 
 const legendColor = d3.legendColor()
   .title("Crime Types")
@@ -39,7 +45,7 @@ const legendColor = d3.legendColor()
   .labelOffset(6)
   .cells(crimeTypes);
 
-const legend = svg.append("g")
+const legend = legendSvg.append("g")
   .attr("class", "legendColor")
   .attr("transform", "translate(250, 15) scale (0.95)")
   .call(legendColor);
@@ -55,10 +61,10 @@ const chicago = await d3.json("./data/chicago-community-areas.geojson");
 
 const margin = { top: 80, right: 30, bottom: 30, left: 20 };
 const mapH = height - margin.top - margin.bottom;
-const xOffset = 200; // adjust this value to move the map right
+const xOffset = 20; // adjust this value to move the map right
 
 const projection = d3.geoMercator()
-        .fitSize([width, mapH], chicago);
+        .fitSize([mapWidth - 50, mapH], chicago);
 
 const path = d3.geoPath().projection(projection);
 

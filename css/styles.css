@@ -110,4 +110,19 @@ ul {
   pointer-events: all;
 }
 
+#legend-and-map {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px; 
+}
+
+#legend {
+    flex: 0 0 auto;
+}
+
+#vis {
+    flex: 1 1 auto;
+}
+
 
