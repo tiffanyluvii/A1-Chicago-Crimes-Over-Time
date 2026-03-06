@@ -114,6 +114,14 @@ const dropDownOptions = dropDown.selectAll("option")
   .text(d => d)
   .attr("value", d => d);
 
+// on dropdown change, update map immediately and update bar chart too
+dropDown.on("change", () => {
+  renderPoints(yearSlider.value());
+  updateViews(crimeData.filter(d => 
+    d.year === yearSlider.value() && 
+    (dropDown.property("value") === "ALL CRIMES" || d.crime === dropDown.property("value"))));
+});
+
 
 // creates a tooltip
 const tooltip = d3.select("body")
