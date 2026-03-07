@@ -73,6 +73,20 @@
                     it to the map in a way that updated the bar chart correctly every time the selection changed. She also ran into a bug where clearing the selection caused the bar chart to default to the full dataset 
                     count, so she and Ryan decided to instead default the bar chart to the counts for the selected year when no region is actively selected.
                 </p>
+                <br>
+                <p>
+                    When we first approached this project, we focused more on a list of interactive features we wanted to include rather than the overall design and structure of the visualization. Because of that, we ended up 
+                    treating the project as a collection of separate goals instead of one cohesive final product, which created a few challenges along the way. One major issue was that the zooming feature conflicted with the brushing 
+                    feature. After we implemented brushing, zooming no longer worked the way we intended. Since we felt that both tools were valuable for showing different aspects of Chicago’s crime data, we eventually added a toggle 
+                    so the user could switch between zooming and brushing depending on what they wanted to explore.
+                </p>
+                <br>
+                <p>
+                    Another problem came up when zooming into the map caused it to overlap with the legend. This mainly happened because we started the project early on with the assumption that we could only use one SVG, so both the map
+                     and the legend were placed inside the same container. As we continued working, we realized that we could instead create multiple SVG containers and position them side by side, which made the layout much cleaner and more
+                      functional. Overall, we see the completion of this project as a success. Throughout the process, we learned a lot about the wide range of tools and methods that make data visualization interactive and engaging. It was especially 
+                      rewarding to research a feature, test it out, and then successfully incorporate it into our own visualization.
+                </p>
 
                 <br>
                 <h2><u><b>References</b></u></h2>
