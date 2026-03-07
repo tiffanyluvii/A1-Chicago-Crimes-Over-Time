@@ -249,7 +249,8 @@ function updateViews(data){
     v => v.length,
     d => d.crime)
     .map(([crime, count]) => ({crime, count}))
-
+    
+    barChartTitle.text(`Top 10 Crimes in selected area for year ${yearSlider.value()}`);
     renderBars(crimeCount);
 }
 
@@ -284,6 +285,13 @@ barChartSvg.append('text')
       .text('Count')
       .style("font-weight", "bold")
       .style("font-size", "20");;
+
+const barChartTitle = barChartSvg.append("text")
+  .attr("x", width / 2)
+  .attr("y", 24)
+  .style("text-anchor", "middle")
+  .style("font-size", "20px")
+  .style("font-weight", "bold");
 
 function renderBars(crimeCount){
 
