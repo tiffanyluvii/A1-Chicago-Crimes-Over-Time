@@ -250,7 +250,7 @@ function updateViews(data){
     d => d.crime)
     .map(([crime, count]) => ({crime, count}))
     
-    barChartTitle.text(`Top 10 Crimes in selected area for year ${yearSlider.value()}`);
+    barChartTitle.text(`Top 10 Crimes in a Selected Area for Year ${yearSlider.value()}`);
     renderBars(crimeCount);
 }
 
