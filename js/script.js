@@ -289,6 +289,7 @@ function renderBars(crimeCount){
 
   console.log(crimeCount);
   const data = crimeCount.slice(0, 10);
+  data.sort((a, b) => d3.descending(a.count, b.count));
 
   const xScale = d3.scaleBand().domain(data.map(d => d.crime)).range([0 , barW])
   const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.count) ?? 0]).range([barH, 0]);
