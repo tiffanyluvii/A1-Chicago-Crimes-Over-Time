@@ -29,6 +29,7 @@ let mode = "brush"; // default is brush, but could also be pan
 const colorScale = d3.scaleOrdinal()
     .domain(crimeTypes)
     .range(colors);
+const activeCrimeTypes = new Set(crimeTypes); // all checked / in set  by default
     
 const legendSvg = d3.select("#legend")
     .append("svg")
@@ -53,6 +54,29 @@ const legend = legendSvg.append("g")
 legend.select(".legendTitle")
   .style("font-size", "20px")
   .style("font-weight", "600");
+
+
+// checkbox on left side
+legend.selectAll(".cell")
+  .append("foreignObject")
+  .attr("x", -25)
+  .attr("y", -6)
+  .attr("width", 20)
+  .attr("height", 20)
+  .append("xhtml:input")
+  .attr("type", "checkbox")
+  .property("checked", true) // checked by def.
+  .on("change", 
+    function (event, crime) {
+    if (!crime) return;
+    if (this.checked) activeCrimeTypes.add(crime); else activeCrimeTypes.delete(crime);
+    const year = yearSlider.value();
+    renderPoints(year);
+    updateViews(crimeData.filter(d =>
+      d.year === year &&
+      activeCrimeTypes.has(d.crime)
+    ));
+  });
 
 // setting up the map projection and path generator of Chicago using the GeoJSON data
 const chicago = await d3.json("./data/chicago-community-areas.geojson");
@@ -103,26 +127,6 @@ const crimeData = await d3.csv("./data/sample_by_year.csv", (d) => {
 });
 
 
-// create a dropdown menu for selecting the crime type to filter the points on the map
-const dropDown = d3.select("#dropdown")
-  .append("select")
-
-const dropDownOptions = dropDown.selectAll("option")
-  .data(["ALL CRIMES", ...crimeTypes])
-  .enter()
-  .append("option")
-  .text(d => d)
-  .attr("value", d => d);
-
-// on dropdown change, update map immediately and update bar chart too
-dropDown.on("change", () => {
-  renderPoints(yearSlider.value());
-  updateViews(crimeData.filter(d => 
-    d.year === yearSlider.value() && 
-    (dropDown.property("value") === "ALL CRIMES" || d.crime === dropDown.property("value"))));
-});
-
-
 // creates a tooltip
 const tooltip = d3.select("body")
   .append("div")
@@ -145,6 +149,7 @@ const yearSlider = d3.sliderBottom()
   .default(2001)
   .on("onchange", (val) => {
     renderPoints(val);
+    updateViews(crimeData.filter(d => d.year === val && activeCrimeTypes.has(d.crime)));
   });
 
 renderPoints(2001);
@@ -155,8 +160,7 @@ sliderSvg.append("g")
 
 
 function renderPoints(year) {
-  const filtered = crimeData.filter(d => d.year === year && (dropDown.property("value") === "ALL CRIMES" 
-  || d.crime === dropDown.property("value")));
+  const filtered = crimeData.filter(d => d.year === year && activeCrimeTypes.has(d.crime));
 
   const time = g.transition().duration(450);
 
@@ -217,7 +221,7 @@ function brushed(event, year){
   if (!selection){
     const year = yearSlider.value();
     points.classed("selected", false).attr("opacity", 0.6);
-    updateViews(crimeData.filter(d => d.year === year));
+    updateViews(crimeData.filter(d => d.year === year && activeCrimeTypes.has(d.crime)));
     return;
   }
 

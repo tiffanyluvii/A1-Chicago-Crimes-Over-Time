@@ -32,7 +32,7 @@ ul {
     border-top: 100px;
 }
 
-#slider, #dropdown{
+#slider{
   flex: 0 0 auto;
 }
 
@@ -68,7 +68,6 @@ ul {
   cursor: pointer;
 }
 
-/* Active button (selected mode) */
 .mode-btn.active {
   background: #2b6cb0;
   border-color: #2b6cb0;
